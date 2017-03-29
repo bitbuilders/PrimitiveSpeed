@@ -83,7 +83,14 @@ public class PlatformHandler implements Runnable, Pausable {
 	}
 	
 	private void timerTick() {
+		seconds += .01;
 		
+		if (seconds % 1 >= 0 && seconds % 1 <= .01) {
+			int s = (int) seconds;
+			game.getSeconds().setText("" + s);
+		}
+		
+		movePlatforms();
 	}
 	
 	private void movePlatforms() {
@@ -159,6 +166,11 @@ public class PlatformHandler implements Runnable, Pausable {
 	}
 	
 	public void startTimer() {
+		scrollSpeed = 1;
+		middleCreation = 0;
+		topCreation = 0;
+		lastSpawnTime = 0;
+		seconds = 0;
 		endlessTimeline.play();
 	}
 	

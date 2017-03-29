@@ -29,6 +29,10 @@ public class Menu extends Application {
 	private ImageCursor cursorEaten = new ImageCursor(image2);
 	private Image play = new Image("file:pictures/PlayButton.png");
 	private Image playHover = new Image("file:pictures/PlayButtonHover.png");
+	private Image edit = new Image("file:pictures/LevelEditorButton.png");
+	private Image editHover = new Image("file:pictures/LevelEditorButtonHover.png");
+	private Image quit = new Image("file:pictures/QuitButton.png");
+	private Image quitHover = new Image("file:pictures/QuitButtonHover.png");
 	
 	@Override
 	public void start(Stage arg0) throws Exception {
@@ -56,11 +60,11 @@ public class Menu extends Application {
 		ImageView iv2 = new ImageView(i2);
 		iv2.setFitHeight(100);
 		iv2.setFitWidth(200);
-		Image i3 = new Image("file:pictures/PlayButton.png");
+		Image i3 = new Image("file:pictures/LevelEditorButton.png");
 		ImageView iv3 = new ImageView(i3);
 		iv3.setFitHeight(100);
 		iv3.setFitWidth(200);
-		Image i4 = new Image("file:pictures/PlayButton.png");
+		Image i4 = new Image("file:pictures/QuitButton.png");
 		ImageView iv4 = new ImageView(i4);
 		iv4.setFitHeight(100);
 		iv4.setFitWidth(200);
@@ -90,18 +94,18 @@ public class Menu extends Application {
 					vbox.setCursor(cursorEaten);
 				}
 				else if (intersects(event, iv3)) {
-					iv3.setImage(playHover);
+					iv3.setImage(editHover);
 					vbox.setCursor(cursorEaten);
 				}
 				else if (intersects(event, iv4)) {
-					iv4.setImage(playHover);
+					iv4.setImage(quitHover);
 					vbox.setCursor(cursorEaten);
 				}
 				else {
 					vbox.setCursor(cursor);
 					iv2.setImage(play);
-					iv3.setImage(play);
-					iv4.setImage(play);
+					iv3.setImage(edit);
+					iv4.setImage(quit);
 				}
 			}
 		});
@@ -114,13 +118,13 @@ public class Menu extends Application {
 		iv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("Controls");
+				System.out.println("Level Editor");
 			}
 		});
 		iv4.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("Level editor");
+				System.exit(0);
 			}
 		});
 	}

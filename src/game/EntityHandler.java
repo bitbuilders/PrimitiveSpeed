@@ -27,8 +27,9 @@ public class EntityHandler implements Runnable, Pausable {
 	private static Random rand = new Random();
 	private Coin c = new Coin(0,0);
 
-	public EntityHandler(Game g, PlatformHandler ph) {
+	public EntityHandler(Game g, PlatformHandler ph, double multiplier) {
 		game = g;
+		coinMultiplier = multiplier;
 		this.ph = ph;
 		thread = new Thread(this);
 		thread.start();
@@ -79,16 +80,8 @@ public class EntityHandler implements Runnable, Pausable {
 				leftBound <= c.getImageView().getBoundsInParent().getMaxX()) {
 			if (topBound <= c.getImageView().getBoundsInParent().getMaxY() &&
 					bottomBound >= c.getImageView().getBoundsInParent().getMinY()) {
-				if (c.getImage().equals(Coin.getCoin())) {
-					game.getPlayer().setGold(game.getPlayer().getGold() + 10);
-				}
-				else {
-					game.getPlayer().setGold(game.getPlayer().getGold() + 1);
-				}
-				game.getLabel().setText("" + game.getPlayer().getGold());;
-				
+				c.playAnimation(game.getPlayer(), game);
 				entities.remove(c);
-				game.getEntities().getChildren().remove(c.getImageView());
 			}
 		}
 	}
@@ -123,6 +116,10 @@ public class EntityHandler implements Runnable, Pausable {
 		coinSpawnTime = w;
 	}
 	
+	private void createEnemy() {
+		
+	}
+	
 	public double getCoinMultiplier() {
 		return coinMultiplier;
 	}
@@ -136,6 +133,7 @@ public class EntityHandler implements Runnable, Pausable {
 	}
 	
 	public void startTimer() {
+		entities.clear();
 		timeline.play();
 	}
 	

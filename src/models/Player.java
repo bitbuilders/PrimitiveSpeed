@@ -3,17 +3,16 @@ package models;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class Player {
+public class Player extends Entity {
 
 	private double glideJuice = 100;
-	private Juice equippedJuice = new Juice();
+	private Juice equippedJuice = null;
 	private int maxLives = 1;
 	private int lives = 1;
 	private int maxAmmo = 0;
 	private int ammo = 0;
 	private boolean canStomp = false;
 	private boolean canGlide = false;
-	private int gold = 0;
 	private int pickupRange = 0;
 	private int numberOfJumps = 1;
 	private double jumpHeight = 8.0;
@@ -30,6 +29,24 @@ public class Player {
 		imageView.setFitWidth(width);
 		imageView.setLayoutX(0);
 		imageView.setLayoutY(y - height - 41);
+	}
+	
+	public Player(double y, double speed, int jumps, int pickupRange, int gold, int ammo, int lives,
+			boolean canGlide, boolean canStomp, Juice j) {
+		imageView.setFitHeight(height);
+		imageView.setFitWidth(width);
+		imageView.setLayoutX(0);
+		imageView.setLayoutY(y - height - 41);
+		
+		setSpeed(speed);
+		setNumberOfJumps(jumps);
+		setPickupRange(pickupRange);
+		setGold(gold);
+		setMaxAmmo(ammo);
+		setMaxLives(lives);
+		setCanGlide(canGlide);
+		setCanStomp(canStomp);
+		setEquippedJuice(j);
 	}
 
 	public double getJumpHeight() {
@@ -110,14 +127,6 @@ public class Player {
 
 	public void setPickupRange(int pickupRange) {
 		this.pickupRange = pickupRange;
-	}
-
-	public int getGold() {
-		return gold;
-	}
-
-	public void setGold(int gold) {
-		this.gold = gold;
 	}
 
 	public boolean isCanGlide() {

@@ -8,15 +8,16 @@ import javafx.scene.image.ImageView;
 
 public class ShopItem {
 
-	private static Image jump = new Image("file:picutres/Jump.png");
-	private static Image speed = new Image("file:picutres/Speed.png");
-	private static Image glide = new Image("file:picutres/Glide.png");
-	private static Image stomp = new Image("file:picutres/Stomp.png");
-	private static Image gold = new Image("file:picutres/Gold.png");
-	private static Image lives = new Image("file:picutres/Lives.png");
-	private static Image juice = new Image("file:picutres/Juice.png");
-	private static Image gun = new Image("file:picutres/Gun.png");
+	private static Image jump = new Image("file:pictures/Shop/Jump.png");
+	private static Image speed = new Image("file:pictures/Shop/Speed.png");
+	private static Image glide = new Image("file:pictures/Shop/Glide.png");
+	private static Image stomp = new Image("file:pictures/Shop/Stomp.png");
+	private static Image gold = new Image("file:pictures/Shop/Coins.png");
+	private static Image lives = new Image("file:pictures/Shop/Lives.png");
+	private static Image juice = new Image("file:pictures/Shop/Juice.png");
+	private static Image gun = new Image("file:pictures/Shop/Gun.png");
 	private ImageView imageView = new ImageView();
+	private ImageView pBar = new ImageView();
 	private int level = 0;
 	private final int maxLevel;
 	private int costForNextLevel;
@@ -34,99 +35,169 @@ public class ShopItem {
 			costForNextLevel = 100;
 			getImageView().setImage(speed);
 			maxLevel = 5;
+			level = (int) ((player.getSpeed() - 1.2) / .2) <= maxLevel ? (int) ((player.getSpeed() - 1.2) / .2) : maxLevel;
+			pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + level + ".png"));
+			if (level == maxLevel) {
+				costForNextLevel = 0;
+			}
+			else {
+				costForNextLevel += (100 * level);
+			}
 			break;
 		case JUMP:
-			costForNextLevel = 150;
+			costForNextLevel = 250;
 			getImageView().setImage(jump);
-			maxLevel = 5;
+			maxLevel = 3;
+			level = player.getNumberOfJumps() - 1 <= maxLevel ? player.getNumberOfJumps() - 1 : maxLevel;
+			pBar.setImage(new Image("file:pictures/ProgressBars/3bars" + level + ".png"));
+			if (level == maxLevel) {
+				costForNextLevel = 0;
+			}
+			else {
+				for (int i = 0; i < level; i++) {
+					costForNextLevel *= 2;
+				}
+			}
 			break;
 		case STOMP:
 			costForNextLevel = 600;
 			getImageView().setImage(stomp);
 			maxLevel = 1;
+			level = player.isCanStomp() ? 1 : 0;
+			pBar.setImage(new Image("file:pictures/ProgressBars/1bar" + level + ".png"));
+			if (level == 1) {
+				costForNextLevel = 0;
+			}
 			break;
 		case GLIDER:
 			costForNextLevel = 750;
 			getImageView().setImage(glide);
 			maxLevel = 1;
+			level = player.isCanGlide() ? 1 : 0;
+			pBar.setImage(new Image("file:pictures/ProgressBars/1bar" + level + ".png"));
+			if (level == 1) {
+				costForNextLevel = 0;
+			}
 			break;
 		case GUN:
 			costForNextLevel = 150;
 			getImageView().setImage(gun);
 			maxLevel = 5;
+			level = player.getMaxAmmo() / 2 <= maxLevel ? player.getMaxAmmo() / 2 : maxLevel;
+			pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + level + ".png"));
+			if (level == maxLevel) {
+				costForNextLevel = 0;
+			}
+			else {
+				costForNextLevel += (150 * level);
+			}
 			break;
 		case JUICE:
 			costForNextLevel = 75;
 			getImageView().setImage(juice);
 			maxLevel = 1;
+			level = player.getEquippedJuice() != null ? 1 : 0;
+			pBar.setImage(new Image("file:pictures/ProgressBars/1bar" + level + ".png"));
+			if (level == maxLevel) {
+				costForNextLevel = 0;
+			}
 			break;
 		case LIVES:
 			costForNextLevel = 500;
 			getImageView().setImage(lives);
 			maxLevel = 3;
+			level = player.getMaxLives() - 1 <= maxLevel ? player.getMaxLives() - 1 : maxLevel;
+			pBar.setImage(new Image("file:pictures/ProgressBars/3bars" + level + ".png"));
+			if (level == maxLevel) {
+				costForNextLevel = 0;
+			}
+			else {
+				for (int i = 0; i < level; i++) {
+					costForNextLevel *= 2;
+				}
+			}
 			break;
 		case GOLD:
 			costForNextLevel = 200;
 			getImageView().setImage(gold);
 			maxLevel = 5;
+			level = player.getPickupRange() / 25 <= maxLevel ? player.getPickupRange() / 25 : maxLevel;
+			pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + level + ".png"));
+			if (level == maxLevel) {
+				costForNextLevel = 0;
+			}
+			else {
+				costForNextLevel += (200 * level);
+			}
 			break;
 		default:
 			costForNextLevel = 100;
 			getImageView().setImage(speed);
+			pBar.setImage(new Image("file:pictures/ProgressBars/5bars0.png"));
 			maxLevel = 5;
 			break;
 		}
 	}
 	
-	public boolean purchaseItem(ItemType it) {
+	public void positionCorrectly() {
+		pBar.setLayoutX(getImageView().getBoundsInParent().getMinX() - 20);
+		pBar.setLayoutY(getImageView().getBoundsInParent().getMinY() + 10);
+	}
+	
+	public boolean purchaseItem() {
 		if (player.getGold() < costForNextLevel || !canPurchase) {
 			return false;
 		}
 		else {
 			player.setGold(player.getGold() - costForNextLevel);
-			switch (it) {
-			case SPEED:
+			
+			if (getImageView().getImage().equals(speed)) {
 				player.setSpeed(player.getSpeed() + .2);
 				costForNextLevel += 100;
-				break;
-			case JUMP:
+				pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + (level + 1) + ".png"));
+			}
+			else if (getImageView().getImage().equals(jump)) {
 				player.setNumberOfJumps(player.getNumberOfJumps() + 1);
-				costForNextLevel += 150;
-				break;
-			case STOMP:
+				costForNextLevel *= 2;
+				pBar.setImage(new Image("file:pictures/ProgressBars/3bars" + (level + 1) + ".png"));
+			}
+			else if (getImageView().getImage().equals(stomp)) {
 				player.setCanStomp(true);
 				costForNextLevel += 0;
-				break;
-			case GLIDER:
+				pBar.setImage(new Image("file:pictures/ProgressBars/1bar" + (level + 1) + ".png"));
+			} 
+			else if (getImageView().getImage().equals(glide)) {
 				player.setCanGlide(true);
 				costForNextLevel = 0;
-				break;
-			case GUN:
+				pBar.setImage(new Image("file:pictures/ProgressBars/1bar" + (level + 1) + ".png"));
+			} 
+			else if (getImageView().getImage().equals(gun)) {
 				player.setMaxAmmo(player.getMaxAmmo() + 2);
 				costForNextLevel += 150;
-				break;
-			case JUICE:
+				pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + (level + 1) + ".png"));
+			} 
+			else if (getImageView().getImage().equals(juice)) {
 				if (player.getEquippedJuice() != null) {
 					player.setGold(player.getGold() + costForNextLevel);
 					return false;
 				}
 				else {
 					player.setEquippedJuice(new Juice());
+					pBar.setImage(new Image("file:pictures/ProgressBars/1bar" + (level + 1) + ".png"));
+					costForNextLevel = 75;
 				}
-				costForNextLevel = 0;
-				break;
-			case LIVES:
+			} 
+			else if (getImageView().getImage().equals(lives)) {
 				player.setMaxLives(player.getMaxLives() + 1);
+				player.setLives(player.getMaxLives());
 				costForNextLevel *= 2;
-				break;
-			case GOLD:
+				pBar.setImage(new Image("file:pictures/ProgressBars/3bars" + (level + 1) + ".png"));
+			} 
+			else if (getImageView().getImage().equals(gold)) {
 				eh.setCoinMultiplier(eh.getCoinMultiplier() + 1.5);
 				player.setPickupRange(player.getPickupRange() + 25);
 				costForNextLevel += 200;
-				break;
-			default:
-				costForNextLevel += 100;
-				break;
+				pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + (level + 1) + ".png"));
 			}
 			
 			level++;
@@ -183,5 +254,13 @@ public class ShopItem {
 
 	public Label getGoldLabel() {
 		return goldLabel;
+	}
+
+	public ImageView getpBar() {
+		return pBar;
+	}
+
+	public void setpBar(ImageView pBar) {
+		this.pBar = pBar;
 	}
 }

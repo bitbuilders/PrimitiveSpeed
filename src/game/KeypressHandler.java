@@ -26,17 +26,21 @@ public class KeypressHandler implements Runnable, Pausable {
 	private boolean movingLeft = false;
 	private boolean movingRight = false;
 	private final double lowestPoint;
+	private Game game;
 	private ArrayList<ArrayList<Pane>> platforms = new ArrayList<ArrayList<Pane>>();
 	private Thread thread;
 	private Timeline timeline;
 	private Timeline glideTimer = new Timeline(new KeyFrame(Duration.millis(100), ae -> glideTick()));
+	private ModeSelection ms;
 	
-	public KeypressHandler(Game g, AnimationHandler ah, ArrayList<ArrayList<Pane>> platforms, double point) {
+	public KeypressHandler(Game g, AnimationHandler ah, ArrayList<ArrayList<Pane>> platforms, double point,
+			ModeSelection ms) {
+		this.ms = ms;
 		glideTimer.setCycleCount(Animation.INDEFINITE);
 		lowestPoint = point;
 		this.platforms = platforms;
 		this.ah = ah;
-		//game = g;
+		game = g;
 		player = g.getPlayer();
 		gameScene = g.getScene();
 		thread = new Thread(this);
@@ -131,6 +135,7 @@ public class KeypressHandler implements Runnable, Pausable {
 	
 	private void glideTick() {
 		player.setGlideJuice(player.getGlideJuice() - 1);
+		game.getGlideMeter().setWidth(game.getGlideMeter().getWidth() - 1);
 		if (player.getJumpHeight() < 0) {
 			player.setFallFactor(.01);
 		}
@@ -146,7 +151,7 @@ public class KeypressHandler implements Runnable, Pausable {
 	}
 	
 	private void fall(double factor) {
-		if (player.getJumpHeight() > -8) {
+		if (player.getJumpHeight() > -8.0) {
 			player.setJumpHeight(player.getJumpHeight() - player.getFallFactor());
 		}
 	}
@@ -191,7 +196,6 @@ public class KeypressHandler implements Runnable, Pausable {
 				if (player.getJumpHeight() == player.getStartingHeight()) {
 					player.setJumpHeight(-.5);
 					falling = true;
-					//TODO solve falling through platform issue
 				}
 			}
 		}
@@ -206,16 +210,28 @@ public class KeypressHandler implements Runnable, Pausable {
 		}
 	}
 	
-	private void checkRight(Pane p) {
-		
+	private void checkDead() {
+		if (player.getImageView().getBoundsInParent().getMinY() > game.getScene().getHeight()) {
+			player.setLives(player.getLives() - 1);
+			if (game.getHearts().size() > 0) {
+				game.getHeartGroup().getChildren().remove(game.getHearts().size() - 1);
+				game.getHearts().remove(game.getHearts().size() - 1);
+			}
+			if (player.getLives() <= 0) {
+				gameOver();
+			}
+			else {
+				jumps = player.getNumberOfJumps();
+				player.setJumpHeight(13);
+				glideTimer.pause();
+				player.setFallFactor(.15);
+			}
+		}
 	}
 	
-	private void checkLeft(Pane p) {
-		
-	}
-	
-	private void checkAbove(Pane p) {
-		
+	private void gameOver() {
+		game.toggleShopDisplay();
+		ms.pauseAllTimers();
 	}
 	
 	public void timerTick() {
@@ -238,11 +254,9 @@ public class KeypressHandler implements Runnable, Pausable {
 			for (int x = 0; x < platforms.get(i).size(); x++) {
 			//System.out.println(platforms.get(i).getBoundsInParent().getMinY() + platforms.get(i).getBoundsInParent().getHeight() / 2);
 			checkBelow(platforms.get(i).get(x));
-			checkRight(platforms.get(i).get(x));
-			checkLeft(platforms.get(i).get(x));
-			checkAbove(platforms.get(i).get(x));
 			}
 		}
+		checkDead();
 	}
 		
 	public boolean isJumping() {

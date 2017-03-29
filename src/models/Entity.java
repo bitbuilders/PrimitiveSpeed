@@ -6,6 +6,7 @@ public class Entity {
 
 	private double speed;
 	private ImageView imageView;
+	private int gold;
 
 	public double getSpeed() {
 		return speed;
@@ -21,6 +22,14 @@ public class Entity {
 
 	public void setImageView(ImageView imageView) {
 		this.imageView = imageView;
+	}
+
+	public int getGold() {
+		return gold;
+	}
+
+	public void setGold(int gold) {
+		this.gold = gold;
 	}
 	
 }
