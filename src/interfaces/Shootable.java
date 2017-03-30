@@ -1,6 +1,8 @@
 package interfaces;
 
+import models.Bullet;
+
 public interface Shootable {
 
-	void Shoot();
+	Bullet Shoot();
 }

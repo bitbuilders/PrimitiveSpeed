@@ -146,7 +146,7 @@ public class ModeSelection {
 		} catch (InterruptedException e) {
 		}
 		ph = new PlatformHandler(g.getPlatforms(), g);
-		eh = new EntityHandler(g, ph, 2);
+		eh = new EntityHandler(g, ph, 2, ms);
 		menu.setScene(g.getScene());
 		g.createShop(eh);
 	}
@@ -270,7 +270,6 @@ public class ModeSelection {
 					int jump = jumpLevel + 1;
 					boolean glide = (glideLevel == 1) ? true : false;
 					boolean stomp = (stompLevel == 1) ? true : false;
-					//TODO make sure to give eh multiplier
 					multiplier = (goldLevel * 1.5) + 2;
 					int pickupRange = (goldLevel * 25);
 					int gun = (gunLevel * 2);
@@ -355,9 +354,17 @@ public class ModeSelection {
 		} catch (InterruptedException e) {
 		}
 		ph = new PlatformHandler(g.getPlatforms(), g);
-		eh = new EntityHandler(g, ph, multiplier);
+		eh = new EntityHandler(g, ph, multiplier, ms);
 		menu.setScene(g.getScene());
 		g.createShop(eh);
+	}
+	
+	public KeypressHandler getKey() {
+		return kh;
+	}
+	
+	public EntityHandler getEntity() {
+		return eh;
 	}
 	
 	public Scene getScene() {

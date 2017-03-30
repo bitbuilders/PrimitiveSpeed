@@ -23,9 +23,14 @@ public class RangedEnemy extends Enemy implements Shootable {
 	}
 
 	@Override
-	public void Shoot() {
-		Bullet b = new Bullet(false);
+	public Bullet Shoot() {
+		Bullet b = new Bullet(false, getImageView().getLayoutX() - 32,
+				getImageView().getLayoutY() +
+				getImageView().getBoundsInParent().getHeight() / 2);
 		b.setMoving(true);
+		//System.out.println(b.getImageView().getLayoutX() + ";" + b.getImageView().getLayoutY());
+		
+		return b;
 	}
 
 	@Override

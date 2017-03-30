@@ -75,7 +75,7 @@ public class PlatformHandler implements Runnable, Pausable {
 			}
 		}
 		
-		if ((int) seconds % 3 == 0 && lastIncrease != (int) seconds) {
+		if ((int) seconds % 4 == 0 && lastIncrease != (int) seconds) {
 			scrollSpeed += .05;
 			lastIncrease = (int) seconds;
 			//spawnTime = scrollSpeed - 1;
@@ -155,6 +155,10 @@ public class PlatformHandler implements Runnable, Pausable {
 			double y = rand.nextDouble() + 1;
 			lastSpawnTime = seconds + (x + y);
 		}
+	}
+	
+	public ArrayList<ArrayList<Pane>> getPositions() {
+		return this.positions;
 	}
 	
 	public double getScrollSpeed() {

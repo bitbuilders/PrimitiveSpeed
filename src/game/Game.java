@@ -56,6 +56,8 @@ public class Game {
 	private final double[] positions;
 	private Group heartGroup = new Group();
 	private ArrayList<ImageView> hearts = new ArrayList<>();
+	private ArrayList<ImageView> ammo = new ArrayList<>();
+	private Group ammoGroup = new Group();
 	private Rectangle glideJuice;
 	
 	public Game(Menu menu, boolean isEndless, ModeSelection ms, ArrayList<Platform> platforms, Player p) {
@@ -99,8 +101,9 @@ public class Game {
 		goldView = new ImageView(i);
 		goldView.setFitWidth(17);
 		goldView.setFitHeight(17);
+		goldView.setLayoutX(750);
 		gold = new Label("" + player.getGold());
-		gold.setLayoutX(20);
+		gold.setLayoutX(770);
 		gold.setLayoutY(-2);
 		gold.setStyle("-fx-font: 18 Arial; -fx-text-fill: #CA0;");
 		infoStuff.getChildren().add(goldView);
@@ -110,11 +113,11 @@ public class Game {
 		
 		Image i2 = new Image("file:pictures/Clock.png");
 		clockView = new ImageView(i2);
-		clockView.setLayoutX(75);
+		clockView.setLayoutX(850);
 		clockView.setFitWidth(17);
 		clockView.setFitHeight(17);
 		seconds = new Label("0");
-		seconds.setLayoutX(95);
+		seconds.setLayoutX(870);
 		seconds.setLayoutY(-2);
 		seconds.setStyle("-fx-font: 18 Arial; -fx-text-fill: #777;");
 		infoStuff.getChildren().add(clockView);
@@ -126,7 +129,7 @@ public class Game {
 		ImageView iv3 = new ImageView(i3);
 		iv3.setFitHeight(17);
 		iv3.setFitWidth(34);
-		iv3.setLayoutX(200);
+		iv3.setLayoutX(100);
 		glideJuice = new Rectangle(100, 15);
 		glideJuice.setFill(Paint.valueOf("#09F"));
 		if (!player.isCanGlide()) {
@@ -134,20 +137,32 @@ public class Game {
 		}
 		glideJuice.setArcHeight(20);
 		glideJuice.setArcWidth(20);
-		glideJuice.setLayoutX(240);
+		glideJuice.setLayoutX(140);
 		glideJuice.setLayoutY(1);
 		infoStuff.getChildren().addAll(iv3, glideJuice);
 		
 		for (int x = 0; x < player.getMaxLives() - 1; x++) {
 			Image i4 = new Image("file:pictures/Heart.png");
 			ImageView iv4 = new ImageView(i4);
-			iv4.setLayoutX(135 + (x * 18));
+			iv4.setLayoutX(3 + (x * 18));
 			iv4.setFitWidth(17);
 			iv4.setFitHeight(17);
 			hearts.add(iv4);
 			heartGroup.getChildren().add(iv4);
 		}
-		infoStuff.getChildren().add(heartGroup);
+		
+		Image i5 = new Image("file:pictures/Pebble.png");
+		for (int x = 0; x < player.getMaxAmmo(); x++) {
+			ImageView iv5 = new ImageView(i5);
+			iv5.setLayoutY(30 + (x * 18));
+			iv5.setLayoutX(3);
+			iv5.setFitWidth(17);
+			iv5.setFitHeight(17);
+			ammo.add(iv5);
+			ammoGroup.getChildren().add(iv5);
+		}
+		
+		infoStuff.getChildren().addAll(heartGroup, ammoGroup);
 		
 		entities.getChildren().add(infoStuff);
 		
@@ -316,11 +331,11 @@ public class Game {
 		platforms.get(2).clear();
 		Platform plat = new Platform((int) (menu.getScene().getWidth() / 20 + 10), menu.getDefaultHeight(), 0);
 		entities.getChildren().addAll(plat.getPlatform(), infoStuff, gold, goldView);
-		goldView.setLayoutX(0);
+		goldView.setLayoutX(750);
 		goldView.setLayoutY(0);
 		goldView.setFitWidth(17);
 		goldView.setFitHeight(17);
-		gold.setLayoutX(20);
+		gold.setLayoutX(770);
 		gold.setLayoutY(-2);
 		gold.setStyle("-fx-font: 18 Arial; -fx-text-fill: #CA0;");
 		plat.getPlatform().toBack();
@@ -339,13 +354,27 @@ public class Game {
 		for (int x = 0; x < player.getMaxLives() - 1; x++) {
 			Image i4 = new Image("file:pictures/Heart.png");
 			ImageView iv4 = new ImageView(i4);
-			iv4.setLayoutX(135 + (x * 18));
+			iv4.setLayoutX(2 + (x * 18));
 			iv4.setFitWidth(17);
 			iv4.setFitHeight(17);
 			hearts.add(iv4);
 			heartGroup.getChildren().add(iv4);
 		}
-		infoStuff.getChildren().add(heartGroup);
+		
+		infoStuff.getChildren().remove(ammoGroup);
+		Image i5 = new Image("file:pictures/Pebble.png");
+		for (int x = player.getAmmo(); x < player.getMaxAmmo(); x++) {
+			ImageView iv5 = new ImageView(i5);
+			iv5.setLayoutY(30 + (x * 18));
+			iv5.setLayoutX(3);
+			iv5.setFitWidth(17);
+			iv5.setFitHeight(17);
+			ammo.add(iv5);
+			ammoGroup.getChildren().add(iv5);
+		}
+		player.setAmmo(player.getMaxAmmo());
+		
+		infoStuff.getChildren().addAll(heartGroup, ammoGroup);
 	}
 	
 	private void addHandlers(ShopItem[] items, Label itemName, Label itemInfo, Label goldCost) {
@@ -382,7 +411,7 @@ public class Game {
 					}
 					itemInfo.setText("Upgrades the number of jumps your"
 							+ " character is able to perform before touching"
-							+ " the ground again. Currently, you can only jump"
+							+ " the ground again. Currently, you can jump"
 							+ " " + player.getNumberOfJumps() + " time(s). This upgrade has three tiers.");
 					goldCost.setText(items[1].getCostForNextLevel() + " Gold");
 				}
@@ -414,8 +443,8 @@ public class Game {
 						items[3].purchaseItem();
 					}
 					else {
-						itemInfo.setText("Gives your character the ability to eliminate enemies"
-								+ " from above, by jumping on them, leaving you unharmed."
+						itemInfo.setText("Gives your character the ability to jump on spiked enemies"
+								+ " leaving you unharmed."
 								+ " Remind you of certain Italian "
 								+ " Plumber? This upgrade only has one tier.");
 					}
@@ -645,6 +674,14 @@ public class Game {
 	
 	public Group getHeartGroup() {
 		return heartGroup;
+	}
+	
+	public ArrayList<ImageView> getAmmo() {
+		return ammo;
+	}
+	
+	public Group getAmmoGroup() {
+		return ammoGroup;
 	}
 	
 	public Rectangle getGlideMeter() {

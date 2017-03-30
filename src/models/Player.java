@@ -1,7 +1,11 @@
 package models;
 
+import game.KeypressHandler;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 public class Player extends Entity {
 
@@ -23,6 +27,7 @@ public class Player extends Entity {
 	private double speed = 1.2;
 	private Image image = new Image("file:pictures/frames/frame0.png");
 	private ImageView imageView = new ImageView(image);
+	private double xVel = 6;
 	
 	public Player(double y) {
 		imageView.setFitHeight(height);
@@ -47,6 +52,28 @@ public class Player extends Entity {
 		setCanGlide(canGlide);
 		setCanStomp(canStomp);
 		setEquippedJuice(j);
+	}
+	
+	public void getKnockedBack(double xDiff, KeypressHandler kh) {
+		xVel = 6;
+		xDiff = xDiff > 0 ? 1 : -1;
+		xVel *= xDiff;
+		setJumpHeight(getStartingHeight());
+		kh.setFalling(true);
+		kh.setJumps(numberOfJumps);
+		Timeline timeline = new Timeline(new KeyFrame(Duration.millis(10), ae -> timerTick()));
+		timeline.setCycleCount(60);
+		timeline.play();
+	}
+	
+	private void timerTick() {
+			getImageView().setLayoutX(getImageView().getLayoutX() + xVel);
+			if (xVel > 0) {
+				xVel -= .1;
+			}
+			else {
+				xVel += .1;
+			}
 	}
 
 	public double getJumpHeight() {

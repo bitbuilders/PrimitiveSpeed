@@ -13,11 +13,11 @@ public class Bullet extends Entity {
 	private static Image pebble = new Image("file:pictures/Pebble.png");
 	private static Image arrow = new Image("file:pictures/Arrow.png");
 	
-	public Bullet(boolean movingRight) {
-		this(movingRight, 2);
+	public Bullet(boolean movingRight, double x, double y) {
+		this(movingRight, 2, x, y);
 	}
 	
-	public Bullet(boolean movingRight, double speed) {
+	public Bullet(boolean movingRight, double speed, double x, double y) {
 		setMovingRight(movingRight);
 		setSpeed(speed);
 		setImage();
@@ -26,9 +26,14 @@ public class Bullet extends Entity {
 	private void setImage() {
 		if (isMovingRight()) {
 			setImageView(new ImageView(pebble));
+			getImageView().setFitWidth(16);
+			getImageView().setFitHeight(16);
 		}
 		else {
 			setImageView(new ImageView(arrow));
+			getImageView().setRotate(180);
+			getImageView().setFitWidth(64);
+			getImageView().setFitHeight(16);
 		}
 	}
 

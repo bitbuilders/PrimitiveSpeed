@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><Players>
 	<Player>
-		<SpeedLevel>0</SpeedLevel>
-		<JumpLevel>0</JumpLevel>
-		<GlideLevel>0</GlideLevel>
-		<StompLevel>0</StompLevel>
-		<GoldLevel>0</GoldLevel>
-		<GunLevel>0</GunLevel>
-		<LivesLevel>0</LivesLevel>
-		<JuiceLevel>0</JuiceLevel>
-		<Gold>0</Gold>
+		<SpeedLevel>3</SpeedLevel>
+		<JumpLevel>3</JumpLevel>
+		<GlideLevel>1</GlideLevel>
+		<StompLevel>1</StompLevel>
+		<GoldLevel>5</GoldLevel>
+		<GunLevel>5</GunLevel>
+		<LivesLevel>3</LivesLevel>
+		<JuiceLevel>1</JuiceLevel>
+		<Gold>140</Gold>
 	</Player>
 </Players>

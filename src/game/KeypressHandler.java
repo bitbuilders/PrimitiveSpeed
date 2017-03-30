@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
+import models.Bullet;
 import models.Player;
 
 public class KeypressHandler implements Runnable, Pausable {
@@ -26,6 +27,9 @@ public class KeypressHandler implements Runnable, Pausable {
 	private boolean movingLeft = false;
 	private boolean movingRight = false;
 	private final double lowestPoint;
+	private double lastShot = 0;
+	private double seconds = 0;
+	private double shotTime = .5;
 	private Game game;
 	private ArrayList<ArrayList<Pane>> platforms = new ArrayList<ArrayList<Pane>>();
 	private Thread thread;
@@ -99,6 +103,10 @@ public class KeypressHandler implements Runnable, Pausable {
 						}
 					}
 				}
+				if (event.getCode().equals(KeyCode.ENTER)) {
+					//shooting = true;
+					shoot();
+				}
 			}
 		});
 		gameScene.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -123,6 +131,9 @@ public class KeypressHandler implements Runnable, Pausable {
 					glideTimer.pause();
 					player.setFallFactor(.15);
 				}
+				if (event.getCode().equals(KeyCode.ENTER)) {
+					//shooting = false;
+				}
 			}
 		});
 		
@@ -142,6 +153,24 @@ public class KeypressHandler implements Runnable, Pausable {
 		if (player.getGlideJuice() <= 0) {
 			glideTimer.stop();
 			player.setFallFactor(.15);
+		}
+	}
+	
+	private void shoot() {
+		if (player.getAmmo() > 0 && seconds - lastShot >= shotTime) {
+			Bullet b = new Bullet(true, 0, 0);
+			b.getImageView().setLayoutX(player.getImageView().getBoundsInParent().getMaxX() + 5);
+			b.getImageView().setLayoutY(player.getImageView().getBoundsInParent().getMinY() +
+					player.getImageView().getBoundsInParent().getHeight() / 2 - 20);
+			game.getEntities().getChildren().add(b.getImageView());
+			ms.getEntity().getBullets().add(b);
+			ms.getEntity().getEntities().add(b);
+			b.setMoving(true);
+			player.setAmmo(player.getAmmo() - 1);
+			lastShot = seconds;
+			
+			game.getAmmoGroup().getChildren().remove(game.getAmmo().size() - 1);
+			game.getAmmo().remove(game.getAmmo().size() - 1);
 		}
 	}
 	
@@ -236,6 +265,7 @@ public class KeypressHandler implements Runnable, Pausable {
 	
 	public void timerTick() {
 		//System.out.println(player.getJumpHeight());
+		seconds += .01;
 		if (movingLeft) {
 			moveLeft();
 		}
@@ -271,6 +301,14 @@ public class KeypressHandler implements Runnable, Pausable {
 			falling = true;
 		}
 		jumps = 0;
+	}
+	
+	public void setJumps(int jumps) {
+		this.jumps = jumps;
+	}
+	
+	public void setFalling(boolean falling) {
+		this.falling = falling;
 	}
 	
 	public void stopTimer() {
