@@ -630,7 +630,8 @@ public class Game {
 		            	eElement.setTextContent("" + (this.player.getNumberOfJumps() - 1));
 		            }
 		            else if ("SpeedLevel".equals(eElement.getNodeName())) {
-		            	eElement.setTextContent("" + ((int) ((this.player.getSpeed() - 1.2) / .2)));
+		            	eElement.setTextContent("" + ((int) ((this.player.getMaxSpeed() - 1.2) / .2)));
+		            	System.out.println((int) ((this.player.getMaxSpeed() - 1.2) / .2));
 		            }
 		            else if ("JuiceLevel".equals(eElement.getNodeName())) {
 		            	eElement.setTextContent("" + (this.player.getEquippedJuice() != null ? 1 : 0));

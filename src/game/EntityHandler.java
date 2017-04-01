@@ -26,7 +26,7 @@ public class EntityHandler implements Runnable, Pausable {
 	private ArrayList<Enemy> enemies = new ArrayList<>();
 	private ArrayList<Entity> entities = new ArrayList<>();
 	private double seconds;
-	private double coinMultiplier = 2.0;
+	private double coinMultiplier = 3.5;
 	private double lastCoinSpawn = 0;
 	private double coinSpawnTime = 0;
 	private int enemySpawnTime = 6;
@@ -36,6 +36,7 @@ public class EntityHandler implements Runnable, Pausable {
 	private double shotTime = 0;
 	private Thread thread;
 	private Timeline timeline;
+	private Timeline levelTimeline;
 	private static Random rand = new Random();
 	private Coin c = new Coin(0,0);
 	private ModeSelection ms;
@@ -51,11 +52,26 @@ public class EntityHandler implements Runnable, Pausable {
 	
 	@Override
 	public void run() {
+		if (game.isEndless()) {
 		timeline = new Timeline(new KeyFrame(
 		        Duration.millis(10),
 		        ae -> timerTick()));
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
+		}
+		else {
+			levelTimeline = new Timeline(new KeyFrame(
+			        Duration.millis(10),
+			        ae -> levelTick()));
+			levelTimeline.setCycleCount(Animation.INDEFINITE);
+			levelTimeline.play();
+		}
+	}
+	
+	private void levelTick() {
+		seconds += .01;
+		
+		moveEntities();
 	}
 	
 	private void timerTick() {
@@ -117,10 +133,12 @@ public class EntityHandler implements Runnable, Pausable {
 				damagePlayer(bullets.get(i).getImageView());
 				entities.remove(bullets.get(i));
 				bullets.remove(bullets.get(i));
-				game.getPlayer().setSpeed(game.getPlayer().getSpeed() - .5);
-				Timeline timeline = new Timeline(new KeyFrame(Duration.millis(3000), 
-								ae -> unSlow(game.getPlayer())));
-				timeline.play();
+				if (game.getPlayer().getSpeed() >= 1.2) {
+					game.getPlayer().setSpeed(game.getPlayer().getSpeed() - .5);
+					Timeline timeline = new Timeline(new KeyFrame(Duration.millis(3000), 
+									ae -> unSlow(game.getPlayer())));
+					timeline.play();
+				}
 			}
 			
 			for (int x = 0; x < enemies.size(); x++) {
@@ -374,17 +392,33 @@ public class EntityHandler implements Runnable, Pausable {
 	}
 	
 	public void stopTimer() {
-		timeline.stop();
+		if (game.isEndless()) {
+			timeline.stop();	
+		}
+		else {
+			levelTimeline.stop();
+		}
 	}
 	
 	public void startTimer() {
 		entities.clear();
 		enemies.clear();
 		bullets.clear();
-		timeline.play();
+		if (game.isEndless()) {
+			timeline.play();
+		}
+		else {
+			levelTimeline.play();
+		}
 	}
 	
 	public void pauseTimer() {
-		timeline.pause();
+		game.getPlayer().setSpeed(game.getPlayer().getMaxSpeed());
+		if (game.isEndless()) {
+			timeline.pause();
+		}
+		else {
+			levelTimeline.pause();
+		}
 	}
 }

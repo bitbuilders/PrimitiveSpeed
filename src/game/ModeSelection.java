@@ -23,6 +23,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import models.Juice;
 import models.Platform;
@@ -32,7 +33,9 @@ public class ModeSelection {
 
 	private Scene promptScene;
 	private Scene modeScene;
+	private Scene levelScene;
 	private Menu menu;
+	private Game game;
 	private Image image = new Image("file:pictures/Cursor.png");
 	private ImageCursor cursor = new ImageCursor(image);
 	private Image image2 = new Image("file:pictures/CursorEaten.png");
@@ -55,6 +58,7 @@ public class ModeSelection {
 	private EntityHandler eh;
 	
 	public ModeSelection(Menu menu, double width, double height) {
+		createLevelSelection(width, height);
 		modeScene = createScene(width, height);
 		createPromptScene(width, height);
 		this.menu = menu;
@@ -113,8 +117,7 @@ public class ModeSelection {
 		iv.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("Level selection");
-				loadLevel("levels/endlessRun/EndlessRun.txt");
+				menu.setScene(levelScene);
 			}
 		});
 		
@@ -267,6 +270,7 @@ public class ModeSelection {
 					 */
 					
 					double speed = 1.2 + (speedLevel * .2);
+					System.out.println(speed);
 					int jump = jumpLevel + 1;
 					boolean glide = (glideLevel == 1) ? true : false;
 					boolean stomp = (stompLevel == 1) ? true : false;
@@ -340,23 +344,48 @@ public class ModeSelection {
 				continueGame(platforms, false, player, 2);
 	}
 	
+	private void createLevelSelection(double width, double height) {
+		BorderPane bp = new BorderPane();
+		VBox vbox = new VBox();
+		HBox hbox = new HBox();
+		
+		Image i = new Image("file:pictures/Pebble.png");
+		ImageView iv = new ImageView(i);
+		iv.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent arg0) {
+				loadLevel("levels/normalLevels/Level0.xml");
+				pauseAllTimers();
+				game.toggleShopDisplay();
+			}
+		});
+		
+		hbox.getChildren().add(iv);
+		hbox.setAlignment(Pos.CENTER);
+		vbox.getChildren().add(hbox);
+		vbox.setAlignment(Pos.CENTER);
+		bp.setCenter(vbox);
+		
+		levelScene = new Scene(bp, width, height);
+	}
+	
 	private void continueGame(ArrayList<Platform> platforms, boolean endless, Player p, double multiplier) {
 		ModeSelection ms = this;
-		Game g = new Game(menu, endless, ms, platforms, p);
-		ah = new AnimationHandler(g);
+		game = new Game(menu, endless, ms, platforms, p);
+		ah = new AnimationHandler(game);
 		try {
 			Thread.sleep(20);
 		} catch (InterruptedException e) {
 		}
-		kh = new KeypressHandler(g, ah, g.getPlatforms(), menu.getDefaultHeight() - 50, ms);
+		kh = new KeypressHandler(game, ah, game.getPlatforms(), menu.getDefaultHeight() - 50, ms);
 		try {
 			Thread.sleep(20);
 		} catch (InterruptedException e) {
 		}
-		ph = new PlatformHandler(g.getPlatforms(), g);
-		eh = new EntityHandler(g, ph, multiplier, ms);
-		menu.setScene(g.getScene());
-		g.createShop(eh);
+		ph = new PlatformHandler(game.getPlatforms(), game);
+		eh = new EntityHandler(game, ph, multiplier, ms);
+		menu.setScene(game.getScene());
+		game.createShop(eh);
 	}
 	
 	public KeypressHandler getKey() {

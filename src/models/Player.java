@@ -25,6 +25,7 @@ public class Player extends Entity {
 	private double width = 48;
 	private double height = 96;
 	private double speed = 1.2;
+	private double maxSpeed = 1.2;
 	private Image image = new Image("file:pictures/frames/frame0.png");
 	private ImageView imageView = new ImageView(image);
 	private double xVel = 6;
@@ -44,6 +45,7 @@ public class Player extends Entity {
 		imageView.setLayoutY(y - height - 41);
 		
 		setSpeed(speed);
+		setMaxSpeed(speed);
 		setNumberOfJumps(jumps);
 		setPickupRange(pickupRange);
 		setGold(gold);
@@ -237,5 +239,13 @@ public class Player extends Entity {
 		sb.append(getMaxAmmo());
 		
 		return sb.toString();
+	}
+
+	public double getMaxSpeed() {
+		return maxSpeed;
+	}
+
+	public void setMaxSpeed(double maxSpeed) {
+		this.maxSpeed = maxSpeed;
 	}
 }

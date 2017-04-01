@@ -166,7 +166,12 @@ public class PlatformHandler implements Runnable, Pausable {
 	}
 	
 	public void stopTimer() {
-		endlessTimeline.stop();
+		if (game.isEndless()) {
+			endlessTimeline.stop();
+		}
+		else {
+			timeline.stop();
+		}
 	}
 	
 	public void startTimer() {
@@ -175,10 +180,20 @@ public class PlatformHandler implements Runnable, Pausable {
 		topCreation = 0;
 		lastSpawnTime = 0;
 		seconds = 0;
-		endlessTimeline.play();
+		if (game.isEndless()) {
+			endlessTimeline.play();
+		}
+		else {
+			timeline.play();
+		}
 	}
 	
 	public void pauseTimer() {
-		endlessTimeline.pause();
+		if (game.isEndless()) {
+			endlessTimeline.pause();
+		}
+		else {
+			timeline.pause();
+		}
 	}
 }

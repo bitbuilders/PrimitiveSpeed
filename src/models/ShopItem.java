@@ -35,7 +35,7 @@ public class ShopItem {
 			costForNextLevel = 100;
 			getImageView().setImage(speed);
 			maxLevel = 5;
-			level = (int) ((player.getSpeed() - 1.2) / .2) <= maxLevel ? (int) ((player.getSpeed() - 1.2) / .2) : maxLevel;
+			level = (int) ((player.getMaxSpeed() - 1.2) / .2) <= maxLevel ? (int) ((player.getMaxSpeed() - 1.2) / .2) : maxLevel;
 			pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + level + ".png"));
 			if (level == maxLevel) {
 				costForNextLevel = 0;
@@ -60,7 +60,7 @@ public class ShopItem {
 			}
 			break;
 		case STOMP:
-			costForNextLevel = 600;
+			costForNextLevel = 500;
 			getImageView().setImage(stomp);
 			maxLevel = 1;
 			level = player.isCanStomp() ? 1 : 0;
@@ -118,7 +118,7 @@ public class ShopItem {
 			}
 			break;
 		case GOLD:
-			costForNextLevel = 200;
+			costForNextLevel = 150;
 			getImageView().setImage(gold);
 			maxLevel = 5;
 			level = player.getPickupRange() / 25 <= maxLevel ? player.getPickupRange() / 25 : maxLevel;
@@ -127,7 +127,7 @@ public class ShopItem {
 				costForNextLevel = 0;
 			}
 			else {
-				costForNextLevel += (200 * level);
+				costForNextLevel += (150 * level);
 			}
 			break;
 		default:
@@ -152,7 +152,8 @@ public class ShopItem {
 			player.setGold(player.getGold() - costForNextLevel);
 			
 			if (getImageView().getImage().equals(speed)) {
-				player.setSpeed(player.getSpeed() + .2);
+				player.setMaxSpeed(player.getMaxSpeed() + .2);
+				player.setSpeed(player.getMaxSpeed());
 				costForNextLevel += 100;
 				pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + (level + 1) + ".png"));
 			}
@@ -196,7 +197,7 @@ public class ShopItem {
 			else if (getImageView().getImage().equals(gold)) {
 				eh.setCoinMultiplier(eh.getCoinMultiplier() + 1.5);
 				player.setPickupRange(player.getPickupRange() + 25);
-				costForNextLevel += 200;
+				costForNextLevel += 150;
 				pBar.setImage(new Image("file:pictures/ProgressBars/5bars" + (level + 1) + ".png"));
 			}
 			

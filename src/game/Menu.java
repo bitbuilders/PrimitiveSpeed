@@ -118,7 +118,8 @@ public class Menu extends Application {
 		iv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("Level Editor");
+				Editor.createScene(getDefaultWidth(), getDefaultHeight());
+				setScene(Editor.getScene());
 			}
 		});
 		iv4.setOnMouseClicked(new EventHandler<MouseEvent>() {
