@@ -7,6 +7,8 @@ public class Entity {
 	private double speed;
 	private ImageView imageView;
 	private int gold;
+	private double actualX;
+	private double actualY;
 
 	public double getSpeed() {
 		return speed;
@@ -30,6 +32,22 @@ public class Entity {
 
 	public void setGold(int gold) {
 		this.gold = gold;
+	}
+
+	public double getActualX() {
+		return actualX;
+	}
+
+	public void setActualX(double actualX) {
+		this.actualX = actualX;
+	}
+
+	public double getActualY() {
+		return actualY;
+	}
+
+	public void setActualY(double actualY) {
+		this.actualY = actualY;
 	}
 	
 }

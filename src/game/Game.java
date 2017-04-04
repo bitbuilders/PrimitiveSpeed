@@ -60,7 +60,8 @@ public class Game {
 	private Group ammoGroup = new Group();
 	private Rectangle glideJuice;
 	
-	public Game(Menu menu, boolean isEndless, ModeSelection ms, ArrayList<Platform> platforms, Player p) {
+	public Game(Menu menu, boolean isEndless, ModeSelection ms, ArrayList<Platform> platforms, Player p,
+			Pane all) {
 		this.ms = ms;
 		this.isEndless = isEndless;
 		this.menu = menu;
@@ -72,7 +73,7 @@ public class Game {
 		};
 		
 		player = p;
-		gameScene = createScene();
+		gameScene = createScene(all);
 		if (platforms != null) {
 			loadPlatforms(platforms);
 		}
@@ -89,13 +90,17 @@ public class Game {
 			else {
 				this.platforms.get(0).add(platforms.get(i).getPlatform());
 			}
-			entities.getChildren().add(platforms.get(i).getPlatform());
 		}
 	}
 	
-	private Scene createScene() {
+	private Scene createScene(Pane all) {
 		infoStuff = new Group();
-		entities = new Pane();
+		if (all != null && !all.getChildren().isEmpty()) {
+			entities = all;
+		}
+		else {
+			entities = new Pane();
+		}
 		
 		Image i = new Image("file:pictures/Coin.png");
 		goldView = new ImageView(i);

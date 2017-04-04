@@ -34,6 +34,18 @@ public class Coin extends Entity {
 		getImageView().toFront();
 	}
 	
+	public Coin(double x, double y, Image i) {
+		setImageView(new ImageView());
+		
+		getImageView().setImage(i);
+		
+		getImageView().setLayoutX(x);
+		getImageView().setLayoutY(y);
+		getImageView().setFitWidth(17);
+		getImageView().setFitHeight(17);
+		getImageView().toFront();
+	}
+	
 	public void playAnimation(Player p, Game g) {
 		timeline = new Timeline(new KeyFrame(Duration.millis(2), ae -> timerTick(p, g)));
 		timeline.setCycleCount(Animation.INDEFINITE);

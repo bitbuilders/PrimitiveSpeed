@@ -115,10 +115,11 @@ public class Menu extends Application {
 				setScene(ms.getScene());
 			}
 		});
+		Menu menu = this;
 		iv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				Editor.createScene(getDefaultWidth(), getDefaultHeight());
+				Editor.createScene(getDefaultWidth(), getDefaultHeight(), menu);
 				setScene(Editor.getScene());
 			}
 		});
@@ -140,6 +141,10 @@ public class Menu extends Application {
 		else {
 			return false;
 		}
+	}
+	
+	public Stage getStage() {
+		return primaryStage;
 	}
 	
 	public void setScene(Scene s) {

@@ -24,10 +24,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import models.Coin;
+import models.Enemy;
+import models.Entity;
 import models.Juice;
+import models.MeleeEnemy;
 import models.Platform;
 import models.Player;
+import models.RangedEnemy;
 
 public class ModeSelection {
 
@@ -137,7 +143,7 @@ public class ModeSelection {
 	
 	private void startNewGame() {
 		ModeSelection ms = this;
-		Game g = new Game(menu, true, ms, null, new Player(menu.getDefaultHeight()));
+		Game g = new Game(menu, true, ms, null, new Player(menu.getDefaultHeight()), null);
 		ah = new AnimationHandler(g);
 		try {
 			Thread.sleep(20);
@@ -149,7 +155,7 @@ public class ModeSelection {
 		} catch (InterruptedException e) {
 		}
 		ph = new PlatformHandler(g.getPlatforms(), g);
-		eh = new EntityHandler(g, ph, 2, ms);
+		eh = new EntityHandler(g, ph, 2, ms, null, null);
 		menu.setScene(g.getScene());
 		g.createShop(eh);
 	}
@@ -225,7 +231,10 @@ public class ModeSelection {
 	}
 	
 	private void loadPlayer(String fileName) {
+		Pane all = new Pane();
 		ArrayList<Platform> platforms = new ArrayList<>();
+		ArrayList<Entity> entities = new ArrayList<>();
+		ArrayList<Enemy> enemies = new ArrayList<>();
 		Player p = new Player(menu.getDefaultHeight());
 		double multiplier = 2;
 		try {
@@ -288,11 +297,15 @@ public class ModeSelection {
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			System.out.println("DocumentBuilder failed");
 		}
-		continueGame(platforms, true, p, multiplier);
+		continueGame(platforms, true, p, multiplier, entities, enemies, all);
 	}
 	
 	private void loadLevel(String fileName) {
+		Pane all = new Pane();
+		ArrayList<Entity> entities = new ArrayList<>();
 		ArrayList<Platform> platforms = new ArrayList<>();
+		ArrayList<Coin> coins = new ArrayList<>();
+		ArrayList<Enemy> enemies = new ArrayList<>();
 		Player player = new Player(menu.getDefaultHeight());
 				try {
 					//Create a document builder
@@ -325,7 +338,55 @@ public class ModeSelection {
 											element.getElementsByTagName("yCoord").item(0).getTextContent())
 									, Integer.parseInt(
 											element.getElementsByTagName("xCoord").item(0).getTextContent()));
+							p.setActualX(p.getPlatform().getLayoutX());
 							platforms.add(p);
+							all.getChildren().add(p.getPlatform());
+						}
+					}
+					
+					NodeList nlist2 = root.getElementsByTagName("Coin");
+					
+					for (int i = 0; i < nlist2.getLength(); i++) {
+						Node node = nlist2.item(i);
+						if (node.getNodeType() == Node.ELEMENT_NODE) {
+							Element element = (Element) node;
+							//System.out.println(element.getElementsByTagName("xCoord").item(0).getTextContent());
+							Coin c = new Coin(Integer.parseInt(
+									element.getElementsByTagName("xCoord").item(0).getTextContent()), 
+									Integer.parseInt(
+											element.getElementsByTagName("yCoord").item(0).getTextContent()));
+							c.setActualX(c.getImageView().getLayoutX());
+							coins.add(c);
+							entities.add(c);
+							all.getChildren().add(c.getImageView());
+						}
+					}
+					
+					NodeList nlist3 = root.getElementsByTagName("Enemy");
+					
+					for (int i = 0; i < nlist3.getLength(); i++) {
+						Node node = nlist3.item(i);
+						if (node.getNodeType() == Node.ELEMENT_NODE) {
+							Element element = (Element) node;
+							//System.out.println(element.getElementsByTagName("xCoord").item(0).getTextContent());
+							String type = element.getElementsByTagName("Type").item(0).getTextContent();
+							Enemy e = null;
+							if (type.equalsIgnoreCase("melee")) {
+								e = new MeleeEnemy();
+							}
+							else {
+								e = new RangedEnemy();
+							}
+							e.getImageView().setLayoutX(Integer.parseInt(
+									element.getElementsByTagName("xCoord").item(0).getTextContent()));
+							e.getImageView().setLayoutY(Integer.parseInt(
+									element.getElementsByTagName("yCoord").item(0).getTextContent()));
+							e.setActualX(e.getImageView().getLayoutX());
+							e.getImageView().setFitHeight(64);
+							e.getImageView().setFitWidth(64);
+							enemies.add(e);
+							entities.add(e);
+							all.getChildren().add(e.getImageView());
 						}
 					}
 					
@@ -337,11 +398,11 @@ public class ModeSelection {
 					//returns a list of subelements of specified name
 					root.getElementsByTagName("subelementName"); 
 					//returns a list of all child nodes
-					root.getChildNodes(); 
+					root.getChildNodes();
 				} catch (ParserConfigurationException | SAXException | IOException e) {
 					System.out.println("DocumentBuilder failed");
 				}
-				continueGame(platforms, false, player, 2);
+				continueGame(platforms, false, player, 2, entities, enemies, all);
 	}
 	
 	private void createLevelSelection(double width, double height) {
@@ -355,8 +416,8 @@ public class ModeSelection {
 			@Override
 			public void handle(MouseEvent arg0) {
 				loadLevel("levels/normalLevels/Level0.xml");
-				pauseAllTimers();
-				game.toggleShopDisplay();
+//				pauseAllTimers();
+//				game.toggleShopDisplay();
 			}
 		});
 		
@@ -369,9 +430,10 @@ public class ModeSelection {
 		levelScene = new Scene(bp, width, height);
 	}
 	
-	private void continueGame(ArrayList<Platform> platforms, boolean endless, Player p, double multiplier) {
+	private void continueGame(ArrayList<Platform> platforms, boolean endless, Player p, double multiplier,
+			ArrayList<Entity> entities, ArrayList<Enemy> enemies, Pane all) {
 		ModeSelection ms = this;
-		game = new Game(menu, endless, ms, platforms, p);
+		game = new Game(menu, endless, ms, platforms, p, all);
 		ah = new AnimationHandler(game);
 		try {
 			Thread.sleep(20);
@@ -383,7 +445,7 @@ public class ModeSelection {
 		} catch (InterruptedException e) {
 		}
 		ph = new PlatformHandler(game.getPlatforms(), game);
-		eh = new EntityHandler(game, ph, multiplier, ms);
+		eh = new EntityHandler(game, ph, multiplier, ms, entities, enemies);
 		menu.setScene(game.getScene());
 		game.createShop(eh);
 	}

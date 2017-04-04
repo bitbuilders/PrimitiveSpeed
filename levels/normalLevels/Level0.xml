@@ -6,4 +6,13 @@
 		<yCoord>5</yCoord>
 		<width>20</width>
 	</Platform>
+	<Coin>
+		<xCoord>100</xCoord>
+		<yCoord>100</yCoord>
+	</Coin>
+	<Enemy>
+		<Type>Melee</Type>
+		<xCoord>950</xCoord>
+		<yCoord>150</yCoord>
+	</Enemy>
 </Level>

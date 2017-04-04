@@ -41,9 +41,17 @@ public class EntityHandler implements Runnable, Pausable {
 	private Coin c = new Coin(0,0);
 	private ModeSelection ms;
 
-	public EntityHandler(Game g, PlatformHandler ph, double multiplier, ModeSelection ms) {
+	public EntityHandler(Game g, PlatformHandler ph, double multiplier, ModeSelection ms,
+			ArrayList<Entity> entities, ArrayList<Enemy> enemies) {
 		this.ms = ms;
 		game = g;
+		//System.out.println(entities.size());
+		if (entities != null && !entities.isEmpty()) {
+			this.entities = entities;
+		}
+		if (enemies != null && !enemies.isEmpty()) {
+			this.enemies = enemies;
+		}
 		coinMultiplier = multiplier;
 		this.ph = ph;
 		thread = new Thread(this);
@@ -53,11 +61,11 @@ public class EntityHandler implements Runnable, Pausable {
 	@Override
 	public void run() {
 		if (game.isEndless()) {
-		timeline = new Timeline(new KeyFrame(
-		        Duration.millis(10),
-		        ae -> timerTick()));
-		timeline.setCycleCount(Animation.INDEFINITE);
-		timeline.play();
+			timeline = new Timeline(new KeyFrame(
+			        Duration.millis(10),
+			        ae -> timerTick()));
+			timeline.setCycleCount(Animation.INDEFINITE);
+			timeline.play();
 		}
 		else {
 			levelTimeline = new Timeline(new KeyFrame(
@@ -72,6 +80,14 @@ public class EntityHandler implements Runnable, Pausable {
 		seconds += .01;
 		
 		moveEntities();
+		checkMelee();
+		moveBullets();
+		
+		//System.out.println(entities.size());
+		
+		if (seconds - lastShot >= shotTime) {
+			EnemyShoot();
+		}
 	}
 	
 	private void timerTick() {

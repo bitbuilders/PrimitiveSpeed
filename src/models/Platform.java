@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
-public class Platform {
+public class Platform extends Entity {
 
 	private Pane platform = new Pane();
 	private static Image brick = new Image("file:pictures/Brick.png");
